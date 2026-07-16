@@ -1,0 +1,12 @@
+Model Name :- Solaire
+ARTIST:- Bohnen
+
+ARTIST SKETCH FAB :- https://sketchfab.com/BOHNE
+NMODEL URL :- https://sketchfab.com/3d-models/solaire-a95b2fc4fc4d49feae35f43cb16f5936
+
+LICENCE :- Creative Commons By Attribution
+Canonical URL https://creativecommons.org/licenses/by/4.0/
+
+This Model was taken from sketchfab as its under CC Attribution and was modified to suit our needs 
+Fixing Artist :- Deep Vartak and Vineet Patel (Bharatiya Drishya)
+

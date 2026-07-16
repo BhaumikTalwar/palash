@@ -9,11 +9,11 @@ int main() {
 
     Vec3 light_dir  = vec3(1.0f, 1.0f, -1.0f); 
     Vec3 ambient    = vec3(0.2f, 0.2f, 0.2f);   
-    Color light_col = WHITE;
+    Color light_col = COLOR_HEX(0x663FD6);
     SetLight(light_dir, ambient, light_col);
     
-    Mesh    *mesh   = load_obj("../objs/head.obj");
-    Texture *tex    = load_texture("../objs/head_diffuse.tga");
+    Mesh    *mesh   = load_obj("../objs/catgirl/catgirl.obj");
+    Texture *tex    = load_texture("../objs/catgirl/catgirl.png");
     if (!mesh || !tex) {
         fprintf(stderr, "Failed to load assets!\n");
         return -1;
@@ -30,7 +30,7 @@ int main() {
 
     Camera cam = {
         .type     = CAMERA_PERSPECTIVE,
-        .position = vec3(0.0f, 0.0f, 2.0f),  
+        .position = vec3(0.5f, 1.0f, 1.0f),  
         .target   = vec3(0.0f, 0.0f, 0.0f),  
         .up       = vec3(0.0f, 1.0f, 0.0f),  
 
