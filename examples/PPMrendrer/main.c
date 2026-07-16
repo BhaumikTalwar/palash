@@ -13,8 +13,8 @@ i32 main() {
     Color light_col = WHITE;
     SetLight(light_dir, ambient, light_col);
     
-    Mesh    *mesh   = load_obj("./objs/head.obj");
-    Texture *tex    = load_texture("./objs/head_diffuse.tga");
+    Mesh    *mesh   = load_obj("../objs/head.obj");
+    Texture *tex    = load_texture("../objs/head_diffuse.tga");
     if (!mesh || !tex) {
         fprintf(stderr, "Failed to load assets!\n");
         return -1;
@@ -58,7 +58,7 @@ i32 main() {
     float angle    = 0;
 
     for (int i = 0; i < num_frames; i++) {
-        sprintf(file_pattern, "./images/output-%06d.ppm", i); 
+        sprintf(file_pattern, "./frames/output-%06d.ppm", i); 
         FILE *f = fopen(file_pattern, "wb");
 
         if (f == NULL) {
