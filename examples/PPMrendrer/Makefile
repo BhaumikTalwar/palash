@@ -1,11 +1,19 @@
-CC = gcc
+CC     := gcc
 FRAMES := frames
 
+CPU     := -march=native
+WARN    := -Wall -Wextra 
+OPT     := -O3 -flto=auto -fomit-frame-pointer -fno-plt
+INCLUDE := -I../../src/
+LIBS 	:= -lm
+
+RELEASE := $(WARN) $(OPT) $(CPU) $(INCLUDE)
+
 main: main.c 
-	$(CC) -Wall -Wextra -I../../src main.c -o main -lm -flto=auto -O3 
+	$(CC) $(RELEASE) main.c -o main $(LIBS)
 
 debug:
-	$(CC) -Wall -Wextra -Werror -I../../src main.c -o main -lm -ggdb
+	$(CC) -Wall -Wextra -Werror $(INCLUDE) main.c -o main $(LIBS) -ggdb
 
 gen: clean main
 	mkdir -p $(FRAMES)

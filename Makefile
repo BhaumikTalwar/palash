@@ -11,9 +11,10 @@ OPT     := -O3 -flto=auto -fomit-frame-pointer -fno-plt
 
 RELEASE := $(WARN) $(OPT) $(CPU)
 
-build:
-	mkdir -p $(BUILD)
+all: build-dir release-static release-shared
 
+build-dir:
+	mkdir -p $(BUILD)
 
 release-static: build
 	$(CC) $(RELEASE) -c src/renderer.c -o $(BUILD)/renderer.o
@@ -42,4 +43,4 @@ release-shared: build
 clean:
 	rm -rf $(BUILD)
 
-.PHONY: build clean release-static release-shared
+.PHONY: all build build-dir clean release-static release-shared
