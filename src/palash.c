@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "renderer.h"
+#include "palash.h"
 #include "compiler.h"
 #include "types.h"
 #include "vec.h"

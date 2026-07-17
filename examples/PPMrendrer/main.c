@@ -1,4 +1,4 @@
-#include "renderer.h"
+#include "palash.h"
 
 #define WIDTH  800
 #define HEIGHT 600
@@ -89,4 +89,4 @@ int main() {
 }
 
 
-#include "../../src/renderer.c"
+#include "../../src/palash.c"

@@ -17,28 +17,28 @@ build-dir:
 	mkdir -p $(BUILD)
 
 release-static: build
-	$(CC) $(RELEASE) -c src/renderer.c -o $(BUILD)/renderer.o
+	$(CC) $(RELEASE) -c src/palash.c -o $(BUILD)/palash.o
 
 	$(AR) rcs \
-	$(BUILD)/librenderer.a \
-	$(BUILD)/renderer.o
+	$(BUILD)/libpalash.a \
+	$(BUILD)/palash.o
 
-	rm -rf $(BUILD)/renderer.o
+	rm -rf $(BUILD)/palash.o
 
 
 release-shared: build
 	$(CC) $(RELEASE) $(PIC) \
-	-c src/renderer.c \
-	-o $(BUILD)/renderer.pic.o
+	-c src/palash.c \
+	-o $(BUILD)/palash.pic.o
 
 	$(CC) \
 	-shared \
 	-flto=auto \
-	$(BUILD)/renderer.pic.o \
-	-o $(BUILD)/librenderer.so \
+	$(BUILD)/palash.pic.o \
+	-o $(BUILD)/libpalash.so \
 	$(LIBS)
 
-	rm -rf $(BUILD)/renderer.pic.o
+	rm -rf $(BUILD)/palash.pic.o
 
 clean:
 	rm -rf $(BUILD)

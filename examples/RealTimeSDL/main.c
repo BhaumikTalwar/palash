@@ -1,6 +1,6 @@
 #include <SDL3/SDL.h>
 
-#include "renderer.h"
+#include "palash.h"
 
 #define WIDTH  1920
 #define HEIGHT 1080
@@ -130,4 +130,4 @@ int main() {
 }
 
 
-#include "../../src/renderer.c"
+#include "../../src/palash.c"
