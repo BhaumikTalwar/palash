@@ -140,6 +140,7 @@ Mesh* load_obj(const char* filepath) {
     mesh->vertices = NULL;
     mesh->faces = NULL;
     mesh->normals = NULL;
+    mesh->uvs = NULL;
 
     char buffer[256] = {0};
     while (fgets(buffer, sizeof(buffer), file) != NULL) {                
