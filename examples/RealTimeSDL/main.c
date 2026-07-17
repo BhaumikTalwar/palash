@@ -44,7 +44,7 @@ int main() {
     SetLight(light_dir, ambient, light_col);
  
     Mesh    *mesh   = load_obj("../objs/catgirl/catgirl.obj");
-    Texture *tex    = load_texture("../objs/catgirl/catgirl.png");
+    Texture *tex    = load_texture_max_dim("../objs/catgirl/catgirl.png", 1024);
     if (!mesh || !tex) {
         fprintf(stderr, "Failed to load assets!\n");
         return -1;

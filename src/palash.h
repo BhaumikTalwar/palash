@@ -178,7 +178,8 @@ void free_mesh(Mesh* mesh);
 void print_debug_obj(Mesh *mesh);
 Vec3 mesh_center(Mesh *mesh);
 
-Texture* load_texture(const char* filepath);
+Texture *load_texture(const char* filepath);
+Texture *load_texture_max_dim(const char* filepath, u32 max_dim);
 void free_tex(Texture* tex);
 
 Color sample2D(Texture *tex, f32 u, f32 v);

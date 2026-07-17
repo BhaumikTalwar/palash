@@ -8,7 +8,10 @@
 #include "vec.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "vendor/stb_image.h"
+
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "vendor/stb_image_resize2.h"
 
 #define DYN_ARR_IMPLEMENTATION
 #include "dynarr.h"
@@ -273,38 +276,83 @@ Vec3 mesh_center(Mesh *mesh) {
 }
 
 Texture *load_texture(const char* filepath) {
-    Texture *tex = malloc(sizeof(Texture)); 
+    return load_texture_max_dim(filepath, 0);
+}
+
+Texture *load_texture_max_dim(const char* filepath, u32 max_dim) {
+    Texture *tex = malloc(sizeof(Texture));
     if (tex == NULL) {
         LOG("Failed to Allocate the Texture %s\n", filepath);
         return NULL;
     }
 
+    i32 src_w, src_h, src_ch;
     u8 *data = stbi_load(
         filepath,
-        (i32 *)&tex->width,
-        (i32 *)&tex->height,
-        (i32 *)&tex->channels,
+        &src_w,
+        &src_h,
+        &src_ch,
         STBI_rgb_alpha
     );
 
     if (data == NULL) {
         LOG("Failed to Load the Texture %s\n", stbi_failure_reason());
         free(tex);
-
         return NULL;
     }
 
-    usize pixel_count = (usize)tex->width * tex->height;
+    i32 dst_w = src_w;
+    i32 dst_h = src_h;
+    u8 *final = data;
+
+    if (max_dim > 0 && (src_w > (i32)max_dim || src_h > (i32)max_dim)) {
+        f32 scale = (f32)max_dim / (f32)(src_w > src_h ? src_w : src_h);
+
+        dst_w = (i32)(src_w * scale + 0.5f);
+        dst_h = (i32)(src_h * scale + 0.5f);
+
+        if (dst_w < 1) dst_w = 1;
+        if (dst_h < 1) dst_h = 1;
+
+        usize resized_size = (usize)dst_w * (usize)dst_h * 4;
+        u8 *resized = malloc(resized_size);
+        if (resized == NULL) {
+            LOG("Failed to Allocate Resized Texture %s\n", filepath);
+            stbi_image_free(data);
+            free(tex);
+            return NULL;
+        }
+
+        if (stbir_resize_uint8_srgb(data, src_w, src_h, 0, resized, dst_w, dst_h, 0, 4) == 0) {
+            LOG("Failed to Resize Texture %s\n", filepath);
+
+            free(resized);
+            stbi_image_free(data);
+            free(tex);
+
+            return NULL;
+        }
+
+        stbi_image_free(data);
+        final = resized;
+    }
+
+    tex->width    = (u32)dst_w;
+    tex->height   = (u32)dst_h;
+    tex->channels = 4;
+
+    usize pixel_count = (usize)dst_w * (usize)dst_h;
     tex->pixels = malloc(pixel_count * sizeof(TexturePixel));
     if (tex->pixels == NULL) {
         LOG("Failed to Allocate the Texture %s\n", filepath);
-        free(tex);
+        if (final != data) free(final);
 
+        free(tex);
         return NULL;
     }
 
-    memcpy(tex->pixels, data, pixel_count * sizeof(TexturePixel));
-    stbi_image_free(data);
+    memcpy(tex->pixels, final, pixel_count * sizeof(TexturePixel));
+    if (final != data) free(final);
     return tex;
 }
 
@@ -324,21 +372,38 @@ Color sample2D(Texture *tex, f32 u, f32 v) {
     u = MAX(0.0f, MIN(1.0f, u));
     v = MAX(0.0f, MIN(1.0f, v));
 
-    v = 1.0f - v; 
+    v = 1.0f - v;
 
-    i32 tex_x = (i32)(u * (tex->width  - 1));
-    i32 tex_y = (i32)(v * (tex->height - 1));
-    
-    i32 idx = (tex_y * tex->width) + tex_x;
-    if (idx < 0) {
-        idx = 0;
-    }
+    f32 fx = u * (f32)(tex->width  - 1);
+    f32 fy = v * (f32)(tex->height - 1);
 
-    TexturePixel texel = tex->pixels[idx];
+    i32 x0 = (i32)fx;
+    i32 y0 = (i32)fy;
+    i32 x1 = x0 + 1;
+    i32 y1 = y0 + 1;
+
+    if (x1 >= (i32)tex->width)  x1 = (i32)tex->width  - 1;
+    if (y1 >= (i32)tex->height) y1 = (i32)tex->height - 1;
+
+    f32 dx = fx - (f32)x0;
+    f32 dy = fy - (f32)y0;
+
+    i32 w = (i32)tex->width;
+
+    TexturePixel p00 = tex->pixels[y0 * w + x0];
+    TexturePixel p10 = tex->pixels[y0 * w + x1];
+    TexturePixel p01 = tex->pixels[y1 * w + x0];
+    TexturePixel p11 = tex->pixels[y1 * w + x1];
+
+    f32 w00 = (1.0f - dx) * (1.0f - dy);
+    f32 w10 = dx          * (1.0f - dy);
+    f32 w01 = (1.0f - dx) * dy;
+    f32 w11 = dx          * dy;
+
     return (Color){
-        .r = texel.r,
-        .g = texel.g,
-        .b = texel.b
+        .r = (u8)(p00.r * w00 + p10.r * w10 + p01.r * w01 + p11.r * w11),
+        .g = (u8)(p00.g * w00 + p10.g * w10 + p01.g * w01 + p11.g * w11),
+        .b = (u8)(p00.b * w00 + p10.b * w10 + p01.b * w01 + p11.b * w11)
     };
 }
 
